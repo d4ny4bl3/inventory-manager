@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<p>Počet zařazených produktů: {{ products }}</p>
+    <p>Počet nezařazených produktů: {{ unordered_products }}</p>
+    <p>Počet regálů: {{ racks }}</p>
+    <p>Počet polic: {{ locations }}</p>
+    <p>_____________________________</p>
+    <p>is_active_true: {{ is_active_true }}</p>
+    <p>is_active_false: {{ is_active_false }}</p>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Sklad
+{% endblock %}
+
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        <h2>Vytvořit umístění:</h2>
+        {% for field in form %}
+            <div class="form-control {% if field.errors %} errors {% endif %}">
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+        	<ul class="errorlist nonfield">
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <button type="submit">Vytvořit</button>
+    </form>
+
+    {% if success %}
+        <script>
+            alert("Úspěšné vytvořeno");
+            window.location.href = "{% url "warehouse" %}";
+        </script>
+    {% endif %}
+
+    <h2>Všechna dostupná umístění:</h2>
+    <ul>
+        {% for all_location in all_locations %}
+        	<li>{{ all_location }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

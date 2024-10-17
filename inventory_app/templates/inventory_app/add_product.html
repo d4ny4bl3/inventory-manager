@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Přidat produkt
+{% endblock %}
+
+
+{% block content %}
+	<h2>Přidat nový produkt</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Vytvořit</button>
+    </form>
+
+{% endblock %}

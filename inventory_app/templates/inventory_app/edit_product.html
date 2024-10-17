@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Upravit produkt - {{ product.name }}
+{% endblock %}
+
+
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upravit</button>
+    </form>
+
+{% endblock %}

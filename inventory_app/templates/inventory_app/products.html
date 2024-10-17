@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Produkty
+{% endblock %}
+
+
+{% block content %}
+
+    <h2>Produkty</h2>
+
+    <a href="{% url "new-product" %}">
+        <button type="button">Vytvořit nový produkt</button>
+    </a>
+
+    <div class="filter">
+        <form method="get">
+            <label for="brand">Značka</label>
+            <select name="brand" id="brand">
+                <option value=""></option>
+                {% for brand in brands %}
+                    <option value="{{ brand.brand }}" {% if brand.brand == brand_filter %}selected{% endif %}>{{ brand.brand }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Filtrovat</button>
+        </form>
+    </div>
+
+    <div class="search">
+        <form method="get">
+            <label for="search">Vyhledej produkt:</label>
+            <input type="text" id="search" name="search">
+            <button type="submit">Vyhledat</button>
+        </form>
+    </div>
+
+    {% if products_paginator %}
+        <table>
+            <tr>
+                <th>Název</th>
+                <th>Značka</th>
+                <th>Kód</th>
+                <th>Umístění</th>
+{#                <th>Staré umístění</th>#}
+                <th>Odkaz</th>
+                <th>Akce</th>
+            </tr>
+            {% for product in products_paginator %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.product_id }}</td>
+                    {% if product.location.exists %}
+                        <td>{{ product.location_arr }}</td>
+                     {% else %}
+                        <td>----</td>
+                    {% endif %}
+{#                    <td>{{ product.old_location }}</td>#}
+                    {% if product.url %}
+                        <td><a href="{{ product.url }}" target="_blank">Odkaz</a></td>
+                    {% else %}
+                        <td>----</td>
+                    {% endif %}
+                    <td>
+                        <a href="{% url "edit-product" product.slug %}">
+                            <button type="button">Upravit</button>
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <p>Nebyly nalezeny žádné produkty.</p>
+            {% endfor %}
+        </table>
+
+        <span>Celkový počet produktů: {{ total_products }}</span>
+
+        <form method="get">
+            <input type="hidden" name="page" value="{{ page_number }}">
+            <input type="hidden" name="search" value="{{ search }}">
+            <input type="hidden" name="brand" value="{{ brand_filter }}">
+
+            <label for="items_per_page">Počet produktů na stránku:</label>
+            <select name="items_per_page" id="items_per_page" onchange="this.form.submit()">
+                <option value="10" {% if items_per_page == 10 %}selected{% endif %}>10</option>
+                <option value="20" {% if items_per_page == 20 %}selected{% endif %}>20</option>
+                <option value="50" {% if items_per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if items_per_page == 100 %}selected{% endif %}>100</option>
+                <option value="200" {% if items_per_page == 200 %}selected{% endif %}>200</option>
+            </select>
+        </form>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if products_paginator.has_previous %}
+                    <a href="?page=1&brand={{ brand_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">&laquo; První</a>
+                    <a href="?page={{ products_paginator.previous_page_number }}&brand={{ brand_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">Předchozí</a>
+                {% endif %}
+
+                <span class="current">
+                    Stránka {{ products_paginator.number }} z {{ products_paginator.paginator.num_pages }}
+                </span>
+
+                {% if products_paginator.has_next %}
+                    <a href="?page={{ products_paginator.next_page_number }}&brand={{ brand_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">Další</a>
+                    <a href="?page={{ products_paginator.paginator.num_pages }}&brand={{ brand_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">Poslední &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,79 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.login-form {
+    border: 2px solid #343a40;
+    padding: 2rem;
+    border-radius: 5px;
+    max-width: 400px;
+}
+
+/* Zarovnání textů a tlačítek na střed */
+.login-form h2, .login-form button {
+    text-align: center;
+}
+
+nav {
+    text-align: center;
+}
+
+.nav-link:hover {
+    background-color: #495057; /* Změna barvy pozadí při hoveru */
+    color: #ffffff; /* Světlý text */
+}
+
+.nav-link.active {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+.wrapper {
+    min-height: 100vh; /* Zajištění, že obsah bude mít minimálně výšku 100 % okna */
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1; /* Zajištění, že hlavní obsah bude flexibilně růst a footer bude na konci */
+}
+
+/* Zvětšení ikony hamburgeru */
+.navbar-toggler .bi-list {
+    font-size: 2rem;
+}
+
+/* Přidání pevného stylu pro ikonu, aby byla vždy viditelná */
+.navbar-toggler i {
+    font-size: 2rem;
+    color: white; /* Zajistí viditelnost na tmavém pozadí */
+}
+
+/* Tlačítko hamburgeru bude viditelné pouze na menších obrazovkách */
+.navbar-toggler {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .navbar-toggler {
+        display: inline-block;
+    }
+}
+
+/* Sidebar zůstává viditelný na větších obrazovkách */
+@media (min-width: 768px) {
+    #sidebarMenu {
+        display: block !important;
+    }
+}
+
+/* Zajištění správného zobrazení a skrytí sidebaru na menších obrazovkách */
+.collapse.show {
+    display: block !important;
+}
+
+/* Prevence konfliktů při zavírání collapse */
+.collapse:not(.show) {
+    display: none !important;
+}
