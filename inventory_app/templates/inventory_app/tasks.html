@@ -1,0 +1,70 @@
+{#{% extends "base.html" %}#}
+{##}
+{#{% block title %}#}
+{#	Úkoly#}
+{#{% endblock %}#}
+{##}
+{##}
+{#{% block content %}#}
+{##}
+{#    <h2 class="my-4">Úkoly</h2>#}
+{##}
+{#    <a href="{% url "new-task" %}" class="btn btn-primary mb-3">#}
+{#        Nový úkol#}
+{#    </a>#}
+{##}
+{#    <div class="task-list-container">#}
+{#        <ul class="task-list">#}
+{#            {% for task in tasks %}#}
+{#                <li class="task-item">#}
+{#                    <span class="task-name">{{ task.task }}</span>#}
+{#                    <input type="checkbox" class="task-status">#}
+{#                    <p class="task-description">{{ task.description }}</p>#}
+{#                </li>#}
+{#            {% endfor %}#}
+{#        </ul>#}
+{#    </div>#}
+{##}
+{#{% endblock %}#}
+
+{% extends "base.html" %}
+
+{% block title %}
+    Úkoly
+{% endblock %}
+
+{% block content %}
+
+    <h2 class="my-4">Úkoly</h2>
+
+    <a href="{% url "new-task" %}" class="btn btn-primary mb-3">
+        Nový úkol
+    </a>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="task-list-container">
+                <ul class="list-group">
+                    {% for task in tasks %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center {% if task.is_done %}bg-light{% endif %}">
+                            <div>
+                                <strong class="task-name">{{ task.task }}</strong>
+                                <p class="task-description mb-0">{{ task.description }}</p>
+                            </div>
+
+                            {% if not task.is_done %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" name="task_id" value="{{ task.id }}" class="btn btn-success">Hotovo</button>
+                                </form>
+                            {% else %}
+                                <span class="badge badge-success">Hotovo</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

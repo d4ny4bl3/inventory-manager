@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Vyhledávání
+{% endblock %}
+
+
+{% block content %}
+	<h2>Search</h2>
+
+    <div class="filter">
+        <form method="get">
+            <label for="brand">Značka:</label>
+            <select name="brand" id="brand">
+                <option value="" {% if brand_filter == "" %}selected{% endif %}></option>
+                {% for brand in brands %}
+                    <option value="{{ brand.brand }}" {% if brand.brand == brand_filter %}selected{% endif %}>{{ brand.brand }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="room">Místnost:</label>
+            <select name="room" id="room">
+                <option  value=""></option>
+                {% for room in rooms %}
+                    <option value="{{ room.id }}">{{ room }} - {{ room.description }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="rack">Regály:</label>
+            <select name="rack" id="rack">
+                <option  value="" {% if rack_filter == "" %}selected{% endif %}></option>
+                {% for rack in racks %}
+                    <option value="{{ rack.id }}" {% if rack.id == rack_filter %}selected{% endif %}>{{ rack }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Filtrovat</button>
+        </form>
+    </div>
+
+    <div class="search">
+        <form method="get">
+            <label for="search">Vyhledej produkt:</label>
+            <input type="text" id="search" name="search">
+            <button type="submit">Vyhledat</button>
+        </form>
+    </div>
+
+    <div class="filter-summary">
+        <span>Filtry => </span>
+        {% if brand_filter %}
+            <span>Podle značky: {{ brand_filter }}</span>
+        {% endif %}
+        {% if rack_filter %}
+            {% for rack in racks %}
+                {% if rack.id == rack_filter %}
+                    <span>Podle regálu: {{ rack }}</span>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if search %}
+            <span>Podle vyhledávání: "{{ search }}"</span>
+        {% endif %}
+        {% if not brand_filter and not rack_filter and not search %}
+            <span>Žádné filtry nejsou použity</span>
+        {% endif %}
+    </div>
+
+    <form method="get">
+        <input type="hidden" name="page" value="{{ page_number }}">
+        <input type="hidden" name="brand" value="{{ brand_filter }}">
+        <input type="hidden" name="rack" value="{{ rack_filter }}">
+        <input type="hidden" name="search" value="{{ search }}">
+        <input type="hidden" name="items_per_page" value="{{ items_per_page }}">
+
+        <button type="submit" name="clear_filters" value="true">Zrušit filtry</button>
+    </form>
+
+    <div class="search_result">
+        {% if search_products %}
+            <table>
+                <tr>
+                    <th>Název</th>
+                    <th>Kód</th>
+                    <th>Umístění</th>
+                    <th>Akce</th>
+                </tr>
+                {% for product in search_products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.product_id }}</td>
+                        {% if product.location.exists %}
+                            <td>{{ product.location_arr }}</td>
+                         {% else %}
+                            <td>----</td>
+                        {% endif %}
+                        <td>
+                            <form method="get">
+                                <input type="hidden" name="page" value="{{ page_number }}">
+                                <input type="hidden" name="brand" value="{{ brand_filter }}">
+                                <input type="hidden" name="rack" value="{{ rack_filter }}">
+                                <input type="hidden" name="search" value="{{ search }}">
+                                <input type="hidden" name="items_per_page" value="{{ items_per_page }}">
+
+                                <button type="submit" name="save_product" value="{{ product.id }}">Uložit</button>
+                            </form>
+                        </td>
+                {% empty %}
+                    <p>Nebyly nalezeny žádné produkty.</p>
+                {% endfor %}
+                </tr>
+            </table>
+        {% endif %}
+
+        <span>Celkový počet produktů: {{ total_products }}</span>
+
+        <form method="get">
+            <input type="hidden" name="page" value="{{ page_number }}">
+            <input type="hidden" name="search" value="{{ search }}">
+            <input type="hidden" name="brand" value="{{ brand_filter }}">
+
+            <label for="items_per_page">Počet produktů na stránku:</label>
+            <select name="items_per_page" id="items_per_page" onchange="this.form.submit()">
+                <option value="10" {% if items_per_page == 10 %}selected{% endif %}>10</option>
+                <option value="20" {% if items_per_page == 20 %}selected{% endif %}>20</option>
+                <option value="50" {% if items_per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if items_per_page == 100 %}selected{% endif %}>100</option>
+                <option value="200" {% if items_per_page == 200 %}selected{% endif %}>200</option>
+            </select>
+        </form>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if search_products.has_previous %}
+                    <a href="?page=1&brand={{ brand_filter }}&rack={{ rack_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">&laquo; První</a>
+                    <a href="?page={{ search_products.previous_page_number }}&brand={{ brand_filter }}&rack={{ rack_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">Předchozí</a>
+                {% endif %}
+
+                <span class="current">
+                    Stránka {{ search_products.number }} z {{ search_products.paginator.num_pages }}
+                </span>
+
+                {% if search_products.has_next %}
+                    <a href="?page={{ search_products.next_page_number }}&brand={{ brand_filter }}&rack={{ rack_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">Další</a>
+                    <a href="?page={{ search_products.paginator.num_pages }}&brand={{ brand_filter }}&rack={{ rack_filter }}&search={{ search }}&items_per_page={{ items_per_page }}">Poslední &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    {% if saved_products %}
+    	<div class="saved_products">
+        <table>
+            <tr>
+                <th>Název</th>
+                <th>Kód</th>
+                <th>Umístění</th>
+                <th>Akce</th>
+            </tr>
+            {% for saved_product in saved_products %}
+            	<tr>
+                    <td>{{ saved_product.name }}</td>
+                    <td>{{ saved_product.product_id }}</td>
+                    {% if saved_product.location.exists %}
+                        <td>{{ saved_product.location_arr }}</td>
+                     {% else %}
+                        <td>----</td>
+                    {% endif %}
+                    <td>
+                        <form method="get">
+                            <input type="hidden" name="page" value="{{ page_number }}">
+                            <input type="hidden" name="brand" value="{{ brand_filter }}">
+                            <input type="hidden" name="rack" value="{{ rack_filter }}">
+                            <input type="hidden" name="search" value="{{ search }}">
+                            <input type="hidden" name="items_per_page" value="{{ items_per_page }}">
+
+                            <button type="submit" name="delete_product" value="{{ saved_product.id }}">Splněno</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <form method="get">
+            <input type="hidden" name="page" value="{{ page_number }}">
+            <input type="hidden" name="brand" value="{{ brand_filter }}">
+            <input type="hidden" name="rack" value="{{ rack_filter }}">
+            <input type="hidden" name="search" value="{{ search }}">
+            <input type="hidden" name="items_per_page" value="{{ items_per_page }}">
+
+            <button type="submit" name="delete_saved_products" value="true">Smazat všechny uložené produkty</button>
+        </form>
+    </div>
+    {% endif %}
+
+{% endblock %}
